@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Album Admin</title>
+<style>
+  :root { --bg:#f5f6f8; --card:#fff; --text:#1c1e21; --muted:#65676b; --line:#dde0e4; --accent:#0866ff; --danger:#d93025; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#18191a; --card:#242526; --text:#e4e6eb; --muted:#b0b3b8; --line:#3a3b3c; --accent:#4599ff; --danger:#ff6b60; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--text); padding:12px; max-width:900px; margin:auto; }
+  h1 { font-size:20px; margin:8px 0 12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; margin-bottom:12px; }
+  input, select, button { font:inherit; padding:10px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--text); }
+  input { width:100%; margin-bottom:8px; }
+  button { background:var(--accent); color:#fff; border:none; cursor:pointer; }
+  button.ghost { background:transparent; color:var(--accent); border:1px solid var(--accent); }
+  button.del { background:var(--danger); padding:6px 10px; font-size:13px; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; margin-top:8px; }
+  .item { border:1px solid var(--line); border-radius:8px; padding:6px; font-size:12px; word-break:break-all; }
+  .item img, .item video { width:100%; height:110px; object-fit:cover; border-radius:6px; background:#000; }
+  .item audio { width:100%; }
+  .muted { color:var(--muted); font-size:13px; }
+  #status { position:fixed; left:12px; right:12px; bottom:12px; padding:10px 12px; border-radius:10px; background:#222; color:#fff; display:none; z-index:9; }
+  details > summary { cursor:pointer; font-weight:600; padding:6px 0; }
+</style>
+</head>
+<body>
+<h1>🎞️ Album Admin</h1>
+
+<div class="card" id="loginBox">
+  <input id="key" type="password" placeholder="Admin key">
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="app" style="display:none">
+  <div class="card">
+    <b>লিংক দিয়ে যোগ করুন</b>
+    <input id="addCat" list="catList" placeholder="ক্যাটাগরি (যেমন: bike, voice song)">
+    <datalist id="catList"></datalist>
+    <input id="addUrl" placeholder="মিডিয়া লিংক (catbox বা যেকোনো লিংক)">
+    <label class="muted"><input type="checkbox" id="rehost" style="width:auto;margin:0 6px 0 0"> catbox-এ কপি করে রাখুন (লিংক যেন না মরে)</label>
+    <div style="margin-top:8px"><button onclick="addLink()">যোগ করুন</button></div>
+  </div>
+
+  <div class="card">
+    <b>ফাইল আপলোড করুন</b>
+    <input id="upCat" list="catList" placeholder="ক্যাটাগরি">
+    <input id="files" type="file" multiple accept="video/*,audio/*,image/*">
+    <button onclick="uploadFiles()">আপলোড</button>
+    <div class="muted" style="margin-top:6px">ফাইল catbox-এ স্থায়ীভাবে সেভ হবে। এখানে প্রতি ফাইল সর্বোচ্চ ৪MB; বড় ফাইল catbox-এ আপলোড করে লিংক দিয়ে যোগ করুন (অথবা বট থেকে রিপ্লাই দিয়ে)।</div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <b>সব ক্যাটাগরি</b>
+      <span class="muted" id="total"></span>
+    </div>
+    <div id="cats"></div>
+  </div>
+
+  <div class="card">
+    <b>ব্যাকআপ</b>
+    <div class="row" style="margin-top:8px">
+      <button class="ghost" onclick="exportDb()">ব্যাকআপ ডাউনলোড</button>
+      <input id="importFile" type="file" accept=".json" style="display:none" onchange="importDb(this)">
+      <button class="ghost" onclick="document.getElementById('importFile').click()">ব্যাকআপ রিস্টোর</button>
+    </div>
+  </div>
+</div>
+<div id="status"></div>
+
+<script>
+var KEY = localStorage.getItem("albumKey") || "";
+var DB = { categories: {} };
+
+function $(id) { return document.getElementById(id); }
+function say(t, keep) {
+  var s = $("status"); s.textContent = t; s.style.display = "block";
+  if (!keep) setTimeout(function () { s.style.display = "none"; }, 3500);
+}
+function api(path, opt) {
+  opt = opt || {}; opt.headers = Object.assign({ "x-api-key": KEY }, opt.headers || {});
+  return fetch(path, opt).then(function (r) {
+    return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; });
+  });
+}
+function login() {
+  KEY = $("key").value.trim();
+  api("/api/all").then(function (d) { localStorage.setItem("albumKey", KEY); DB = d; show(); })
+    .catch(function () { say("ভুল key"); });
+}
+function show() { $("loginBox").style.display = "none"; $("app").style.display = "block"; render(); }
+function reload() { return api("/api/all").then(function (d) { DB = d; render(); }); }
+
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+function render() {
+  var names = Object.keys(DB.categories).sort();
+  var total = 0, html = "", opts = "";
+  names.forEach(function (n) {
+    var items = DB.categories[n]; total += items.length; opts += '<option value="' + esc(n) + '">';
+    html += '<details><summary>' + esc(n) + ' (' + items.length + ')</summary>';
+    html += '<div class="row"><button class="ghost" data-act="rename" data-cat="' + esc(n) + '">নাম বদলান</button>';
+    html += '<button class="del" data-act="delcat" data-cat="' + esc(n) + '">ক্যাটাগরি মুছুন</button></div><div class="grid">';
+    items.forEach(function (it) {
+      var m;
+      if (it.kind === "video") m = '<video src="' + esc(it.url) + '" controls preload="none"></video>';
+      else if (it.kind === "audio") m = '<audio src="' + esc(it.url) + '" controls preload="none"></audio>';
+      else m = '<img src="' + esc(it.url) + '" loading="lazy">';
+      html += '<div class="item">' + m + '<div class="muted">' + esc(it.kind) + ' · ' + esc(it.id) + '</div>';
+      html += '<button class="del" data-act="delitem" data-id="' + esc(it.id) + '">মুছুন</button></div>';
+    });
+    html += '</div></details>';
+  });
+  $("cats").innerHTML = html || '<div class="muted">কিছু নেই</div>';
+  $("catList").innerHTML = opts;
+  $("total").textContent = names.length + " ক্যাটাগরি · " + total + " মিডিয়া";
+}
+
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-act]"); if (!b) return;
+  var act = b.getAttribute("data-act");
+  if (act === "delitem") {
+    if (!confirm("মুছবেন?")) return;
+    api("/api/item?id=" + encodeURIComponent(b.getAttribute("data-id")), { method: "DELETE" }).then(reload).then(function () { say("মোছা হয়েছে"); }).catch(function (x) { say(x.message); });
+  } else if (act === "delcat") {
+    var c = b.getAttribute("data-cat");
+    if (!confirm('"' + c + '" ক্যাটাগরির সব মিডিয়া মুছবেন?')) return;
+    api("/api/category?name=" + encodeURIComponent(c), { method: "DELETE" }).then(reload).then(function () { say("মোছা হয়েছে"); }).catch(function (x) { say(x.message); });
+  } else if (act === "rename") {
+    var from = b.getAttribute("data-cat"), to = prompt("নতুন নাম", from);
+    if (!to) return;
+    api("/api/rename", { method: "POST", body: JSON.stringify({ from: from, to: to }) }).then(reload).then(function () { say("নাম বদলেছে"); }).catch(function (x) { say(x.message); });
+  }
+});
+
+function addLink() {
+  var cat = $("addCat").value.trim(), url = $("addUrl").value.trim();
+  if (!cat || !url) return say("ক্যাটাগরি আর লিংক দিন");
+  say("সেভ হচ্ছে...", true);
+  api("/api/add", { method: "POST", body: JSON.stringify({ category: cat, url: url, rehost: $("rehost").checked }) })
+    .then(function () { $("addUrl").value = ""; return reload(); }).then(function () { say("✅ যোগ হয়েছে"); })
+    .catch(function (x) { say("❌ " + x.message); });
+}
+
+function uploadFiles() {
+  var cat = $("upCat").value.trim(), files = $("files").files;
+  if (!cat || !files.length) return say("ক্যাটাগরি দিন আর ফাইল বাছুন");
+  var i = 0;
+  (function next() {
+    if (i >= files.length) { $("files").value = ""; return reload().then(function () { say("✅ আপলোড শেষ"); }); }
+    var f = files[i++];
+    if (f.size > 4 * 1024 * 1024) { say("❌ " + f.name + " ৪MB এর বেশি - লিংক দিয়ে যোগ করুন", true); return setTimeout(next, 1500); }
+    say("আপলোড হচ্ছে " + i + "/" + files.length + " ...", true);
+    fetch("/api/upload?category=" + encodeURIComponent(cat) + "&name=" + encodeURIComponent(f.name), { method: "POST", headers: { "x-api-key": KEY, "Content-Type": "application/octet-stream" }, body: f })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error); }); })
+      .then(next).catch(function (x) { say("❌ " + f.name + ": " + x.message); });
+  })();
+}
+
+function exportDb() {
+  var blob = new Blob([JSON.stringify(DB)], { type: "application/json" });
+  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "album-backup.json"; a.click();
+}
+function importDb(inp) {
+  var f = inp.files[0]; if (!f) return;
+  if (!confirm("বর্তমান সব ডেটা এই ব্যাকআপ দিয়ে বদলে যাবে। চালিয়ে যাবেন?")) return;
+  f.text().then(function (t) { return api("/api/import", { method: "POST", body: t }); }).then(reload).then(function () { say("✅ রিস্টোর হয়েছে"); }).catch(function (x) { say("❌ " + x.message); });
+}
+
+if (KEY) { api("/api/all").then(function (d) { DB = d; show(); }).catch(function () {}); }
+</script>
+</body>
+</html>
