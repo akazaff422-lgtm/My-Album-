@@ -5,8 +5,13 @@
 const crypto = require("crypto");
 
 const ADMIN_KEY = process.env.ADMIN_KEY || "";
-const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || "";
-const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "";
+// Works with any prefix Vercel adds (e.g. STORAGE_KV_REST_API_URL)
+function findEnv(suffixes) {
+  const key = Object.keys(process.env).find(k => suffixes.some(s => k === s || k.endsWith("_" + s)));
+  return key ? process.env[key] : "";
+}
+const REDIS_URL = findEnv(["KV_REST_API_URL", "REST_API_URL", "UPSTASH_REDIS_REST_URL", "REST_URL"]);
+const REDIS_TOKEN = findEnv(["KV_REST_API_TOKEN", "REST_API_TOKEN", "UPSTASH_REDIS_REST_TOKEN", "REST_TOKEN"]);
 const HASH = "album:cats"; // field = category name, value = JSON array of items
 const MAX_UPLOAD = 4 * 1024 * 1024; // Vercel request limit is 4.5MB
 
@@ -215,3 +220,4 @@ module.exports = async function handler(req, res) {
     return send(res, 500, { error: e.message });
   }
 };
+  
