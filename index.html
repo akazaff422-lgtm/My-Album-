@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#140a33">
+<title>JABED VAO Album Studio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%91%91%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night:#140a33; --night2:#1d1048; --panel:#241657; --panel2:#2d1c69; --line:#4a3a8f;
+    --text:#f4f0ff; --muted:#b4a9e0;
+    --pink:#ff3d9a; --amber:#ffb020; --cyan:#22d3ee; --mint:#34e3a0; --violet:#8b5cf6; --coral:#ff6b4a; --lime:#b6f04a;
+    --danger:#ff5d73;
+    color-scheme: dark;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin:0; min-height:100vh; color:var(--text);
+    font-family:"Outfit", system-ui, sans-serif; font-size:16px; line-height:1.5;
+    background:
+      radial-gradient(900px 500px at 100% -10%, rgba(255,61,154,.28), transparent 60%),
+      radial-gradient(700px 500px at -10% 20%, rgba(34,211,238,.20), transparent 60%),
+      radial-gradient(800px 600px at 60% 110%, rgba(139,92,246,.35), transparent 60%),
+      var(--night);
+    background-attachment: fixed;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 14px calc(90px + env(safe-area-inset-bottom, 0px));
+  }
+  .wrap { max-width:880px; margin:0 auto; }
+
+  /* ---------- owner card ---------- */
+  .owner {
+    display:flex; align-items:center; gap:14px; padding:16px;
+    border-radius:22px; position:relative; overflow:hidden;
+    background: linear-gradient(135deg, #3b1d8f 0%, #7a1fa2 45%, #ff3d9a 100%);
+    box-shadow: 0 14px 40px rgba(255,61,154,.28);
+  }
+  .owner::after { content:""; position:absolute; right:-40px; top:-40px; width:150px; height:150px; border-radius:50%; background:rgba(255,255,255,.12); }
+  .avatar {
+    flex:none; width:64px; height:64px; border-radius:50%; display:grid; place-items:center; position:relative;
+    font-family:"Unbounded", sans-serif; font-weight:800; font-size:22px; color:#2a0d5e;
+    background:conic-gradient(from 0deg, var(--amber), var(--pink), var(--cyan), var(--mint), var(--amber));
+    animation: spin 8s linear infinite;
+  }
+  .avatar span { position:absolute; inset:4px; border-radius:50%; background:#fff; display:grid; place-items:center; animation: spin 8s linear infinite reverse; }
+  .crown { position:absolute; top:-14px; left:50%; transform:translateX(-50%) rotate(-8deg); font-size:22px; z-index:2; filter:drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
+  .who { min-width:0; position:relative; z-index:1; }
+  .who small { display:inline-block; background:rgba(255,255,255,.22); border-radius:99px; padding:1px 10px; font-size:13px; font-weight:600; margin-bottom:4px; }
+  .who h1 { margin:0; font-family:"Unbounded", sans-serif; font-weight:800; font-size:clamp(20px,5.6vw,30px); letter-spacing:.5px; line-height:1.15; }
+  .who p { margin:2px 0 0; font-size:14px; opacity:.9; }
+  .logout { margin-left:auto; position:relative; z-index:1; background:rgba(0,0,0,.28); color:#fff; border:0; border-radius:12px; padding:8px 12px; font:inherit; font-size:14px; cursor:pointer; }
+
+  /* ---------- login ---------- */
+  #loginBox { margin-top:28px; }
+  .loginCard { margin-top:16px; background:rgba(36,22,87,.85); border:1px solid var(--line); border-radius:20px; padding:18px; backdrop-filter: blur(6px); }
+  .loginCard h2 { margin:0 0 4px; font-size:20px; }
+  .loginCard p { margin:0 0 12px; color:var(--muted); font-size:14px; }
+
+  /* ---------- stats ---------- */
+  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+  .stat { border-radius:16px; padding:12px; color:#1a0b3d; }
+  .stat b { display:block; font-family:"Unbounded", sans-serif; font-size:24px; line-height:1.1; }
+  .stat span { font-size:13px; font-weight:600; }
+  .s1 { background:var(--cyan); } .s2 { background:var(--amber); } .s3 { background:var(--mint); }
+
+  /* ---------- panels ---------- */
+  .card { background:rgba(36,22,87,.82); border:1px solid var(--line); border-radius:20px; padding:16px; margin-bottom:14px; backdrop-filter: blur(6px); }
+  .card h3 { margin:0 0 10px; font-size:18px; display:flex; align-items:center; gap:8px; }
+  .chip { display:inline-grid; place-items:center; width:30px; height:30px; border-radius:10px; font-size:16px; }
+  .c-add { background:var(--pink); } .c-up { background:var(--cyan); } .c-all { background:var(--amber); } .c-bk { background:var(--mint); }
+
+  input[type=text], input[type=password], input[type=file] {
+    width:100%; margin-bottom:10px; padding:12px 14px; border-radius:14px; font:inherit; color:var(--text);
+    background:var(--night2); border:1.5px solid var(--line); outline:none;
+  }
+  input:focus-visible, button:focus-visible, summary:focus-visible { outline:3px solid var(--cyan); outline-offset:2px; }
+  input[type=text]:focus, input[type=password]:focus { border-color:var(--cyan); }
+  input::placeholder { color:#8f84c4; }
+  input[type=file]::file-selector-button { margin-right:10px; border:0; border-radius:10px; padding:8px 12px; font:inherit; font-weight:600; background:var(--violet); color:#fff; }
+  .check { display:flex; gap:8px; align-items:flex-start; color:var(--muted); font-size:14px; margin-bottom:12px; }
+  .check input { width:20px; height:20px; margin:2px 0 0; accent-color:var(--pink); flex:none; }
+
+  button { font:inherit; font-weight:700; border:0; border-radius:14px; padding:12px 18px; cursor:pointer; color:#1a0b3d; }
+  button:active { transform:scale(.97); }
+  .b-pink { background:linear-gradient(90deg,var(--pink),var(--coral)); color:#fff; }
+  .b-cyan { background:linear-gradient(90deg,var(--cyan),var(--mint)); }
+  .b-amber { background:linear-gradient(90deg,var(--amber),var(--lime)); }
+  .b-ghost { background:transparent; color:var(--text); border:1.5px solid var(--line); }
+  .b-del { background:var(--danger); color:#fff; padding:6px 12px; font-size:13px; border-radius:10px; }
+  .full { width:100%; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .note { color:var(--muted); font-size:13.5px; margin-top:8px; }
+
+  /* ---------- categories ---------- */
+  details.cat { border-radius:16px; margin-top:10px; background:var(--night2); border:1.5px solid var(--c); overflow:hidden; }
+  details.cat > summary { list-style:none; cursor:pointer; padding:12px 14px; display:flex; align-items:center; gap:10px; font-weight:700; }
+  details.cat > summary::-webkit-details-marker { display:none; }
+  .dot { flex:none; width:14px; height:14px; border-radius:50%; background:var(--c); box-shadow:0 0 12px var(--c); }
+  .count { margin-left:auto; background:var(--c); color:#1a0b3d; border-radius:99px; padding:0 12px; font-size:14px; }
+  .catBody { padding:0 12px 12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:12px; }
+  .item { border-radius:14px; padding:6px; background:var(--panel); border:1px solid var(--line); font-size:13px; }
+  .item img, .item video { width:100%; height:110px; object-fit:cover; border-radius:10px; background:#000; display:block; }
+  .item audio { width:100%; height:40px; }
+  .meta { display:flex; align-items:center; justify-content:space-between; gap:6px; margin-top:6px; color:var(--muted); }
+  .kind { background:var(--c); color:#1a0b3d; border-radius:8px; padding:0 8px; font-weight:700; font-size:12px; }
+  .empty { text-align:center; color:var(--muted); padding:22px 8px; }
+
+  /* ---------- toast ---------- */
+  #status { position:fixed; left:14px; right:14px; bottom:calc(14px + env(safe-area-inset-bottom, 0px)); padding:13px 16px; border-radius:16px; background:#fff; color:#1a0b3d; font-weight:700; display:none; z-index:9; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+  .foot { text-align:center; color:var(--muted); font-size:13px; margin-top:20px; }
+  .foot b { color:var(--amber); font-family:"Unbounded", sans-serif; font-weight:600; }
+
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .avatar, .avatar span { animation:none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="owner">
+    <div class="avatar"><i class="crown">👑</i><span>JV</span></div>
+    <div class="who">
+      <small>Owner</small>
+      <h1>JABED VAO</h1>
+      <p>Album Studio</p>
+    </div>
+    <button class="logout" id="logoutBtn" style="display:none" onclick="logout()">Log out</button>
+  </div>
+
+  <div id="loginBox">
+    <div class="loginCard">
+      <h2>Welcome back, boss</h2>
+      <p>Enter your admin password to add or edit media.</p>
+      <input id="key" type="password" placeholder="Admin password" onkeydown="if(event.key==='Enter')login()">
+      <button class="b-pink full" onclick="login()">Log in</button>
+    </div>
+  </div>
+
+  <div id="app" style="display:none">
+    <div class="stats">
+      <div class="stat s1"><b id="nCats">0</b><span>Categories</span></div>
+      <div class="stat s2"><b id="nMedia">0</b><span>Total media</span></div>
+      <div class="stat s3"><b id="nVideo">0</b><span>Videos</span></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip c-add">🔗</span>Add by link</h3>
+      <input id="addCat" type="text" list="catList" placeholder="Category (e.g. bike, voice song)">
+      <datalist id="catList"></datalist>
+      <input id="addUrl" type="text" placeholder="Media link (catbox or any link)">
+      <label class="check"><input type="checkbox" id="rehost"><span>Copy to catbox so the link never expires</span></label>
+      <button class="b-pink full" onclick="addLink()">Add</button>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip c-up">⬆️</span>Upload files</h3>
+      <input id="upCat" type="text" list="catList" placeholder="Category">
+      <input id="files" type="file" multiple accept="video/*,audio/*,image/*">
+      <button class="b-cyan full" onclick="uploadFiles()">Upload</button>
+      <div class="note">Max 4MB per file here. For bigger files, upload to catbox and add by link, or reply to the media in the bot and run album add.</div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip c-all">🎞️</span>All categories</h3>
+      <div id="cats"></div>
+    </div>
+
+    <div class="card">
+      <h3><span class="chip c-bk">💾</span>Backup</h3>
+      <div class="row">
+        <button class="b-amber" onclick="exportDb()">Download backup</button>
+        <input id="importFile" type="file" accept=".json" style="display:none" onchange="importDb(this)">
+        <button class="b-ghost" onclick="document.getElementById('importFile').click()">Restore backup</button>
+      </div>
+    </div>
+
+    <div class="foot">Made for <b>JABED VAO</b></div>
+  </div>
+</div>
+<div id="status"></div>
+
+<script>
+var KEY = localStorage.getItem("albumKey") || "";
+var DB = { categories: {} };
+var COLORS = ["#ff3d9a", "#ffb020", "#22d3ee", "#34e3a0", "#8b5cf6", "#ff6b4a", "#b6f04a"];
+
+function $(id) { return document.getElementById(id); }
+function say(t, keep) {
+  var s = $("status"); s.textContent = t; s.style.display = "block";
+  clearTimeout(say.t);
+  if (!keep) say.t = setTimeout(function () { s.style.display = "none"; }, 3500);
+}
+function api(path, opt) {
+  opt = opt || {}; opt.headers = Object.assign({ "x-api-key": KEY }, opt.headers || {});
+  return fetch(path, opt).then(function (r) {
+    return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || r.status); return j; });
+  });
+}
+function login() {
+  KEY = $("key").value.trim();
+  if (!KEY) return say("Enter the password");
+  api("/api/all").then(function (d) { localStorage.setItem("albumKey", KEY); DB = d; show(); })
+    .catch(function () { say("Wrong password, try again"); });
+}
+function logout() { localStorage.removeItem("albumKey"); KEY = ""; location.reload(); }
+function show() {
+  $("loginBox").style.display = "none"; $("app").style.display = "block"; $("logoutBtn").style.display = "inline-block"; render();
+}
+function reload() { return api("/api/all").then(function (d) { DB = d; render(); }); }
+
+function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+function colorFor(name) {
+  var h = 0; for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return COLORS[h % COLORS.length];
+}
+
+function render() {
+  var names = Object.keys(DB.categories).sort();
+  var total = 0, videos = 0, html = "", opts = "";
+  names.forEach(function (n) {
+    var items = DB.categories[n]; total += items.length; opts += '<option value="' + esc(n) + '">';
+    html += '<details class="cat" style="--c:' + colorFor(n) + '"><summary><span class="dot"></span>' + esc(n) + '<span class="count">' + items.length + '</span></summary><div class="catBody">';
+    html += '<div class="row"><button class="b-ghost" data-act="rename" data-cat="' + esc(n) + '">Rename</button>';
+    html += '<button class="b-del" data-act="delcat" data-cat="' + esc(n) + '">Delete category</button></div><div class="grid">';
+    items.forEach(function (it) {
+      if (it.kind === "video") videos++;
+      var m;
+      if (it.kind === "video") m = '<video src="' + esc(it.url) + '" controls preload="none"></video>';
+      else if (it.kind === "audio") m = '<audio src="' + esc(it.url) + '" controls preload="none"></audio>';
+      else m = '<img src="' + esc(it.url) + '" loading="lazy" alt="">';
+      html += '<div class="item">' + m + '<div class="meta"><span class="kind">' + esc(it.kind) + '</span><span>' + esc(it.id) + '</span></div>';
+      html += '<div style="margin-top:6px"><button class="b-del" data-act="delitem" data-id="' + esc(it.id) + '">Delete</button></div></div>';
+    });
+    if (!items.length) html += '<div class="empty">This category is empty</div>';
+    html += '</div></div></details>';
+  });
+  $("cats").innerHTML = html || '<div class="empty">Nothing here yet. Add your first media with the forms above.</div>';
+  $("catList").innerHTML = opts;
+  $("nCats").textContent = names.length;
+  $("nMedia").textContent = total;
+  $("nVideo").textContent = videos;
+}
+
+document.addEventListener("click", function (e) {
+  var b = e.target.closest("button[data-act]"); if (!b) return;
+  var act = b.getAttribute("data-act");
+  if (act === "delitem") {
+    if (!confirm("Delete this media?")) return;
+    api("/api/item?id=" + encodeURIComponent(b.getAttribute("data-id")), { method: "DELETE" }).then(reload).then(function () { say("Deleted"); }).catch(function (x) { say(x.message); });
+  } else if (act === "delcat") {
+    var c = b.getAttribute("data-cat");
+    if (!confirm('"' + c + '" category and all its media?')) return;
+    api("/api/category?name=" + encodeURIComponent(c), { method: "DELETE" }).then(reload).then(function () { say("Category deleted"); }).catch(function (x) { say(x.message); });
+  } else if (act === "rename") {
+    var from = b.getAttribute("data-cat"), to = prompt("New name", from);
+    if (!to) return;
+    api("/api/rename", { method: "POST", body: JSON.stringify({ from: from, to: to }) }).then(reload).then(function () { say("Renamed"); }).catch(function (x) { say(x.message); });
+  }
+});
+
+function addLink() {
+  var cat = $("addCat").value.trim(), url = $("addUrl").value.trim();
+  if (!cat || !url) return say("Enter both a category and a link");
+  say("Saving...", true);
+  api("/api/add", { method: "POST", body: JSON.stringify({ category: cat, url: url, rehost: $("rehost").checked }) })
+    .then(function () { $("addUrl").value = ""; return reload(); }).then(function () { say("✅ Added"); })
+    .catch(function (x) { say("❌ " + x.message); });
+}
+
+function uploadFiles() {
+  var cat = $("upCat").value.trim(), files = $("files").files;
+  if (!cat || !files.length) return say("Enter a category and choose files");
+  var i = 0;
+  (function next() {
+    if (i >= files.length) { $("files").value = ""; return reload().then(function () { say("✅ Upload finished"); }); }
+    var f = files[i++];
+    if (f.size > 4 * 1024 * 1024) { say("❌ " + f.name + " is over 4MB, add it by link instead", true); return setTimeout(next, 1500); }
+    say("Uploading " + i + "/" + files.length + " ...", true);
+    fetch("/api/upload?category=" + encodeURIComponent(cat) + "&name=" + encodeURIComponent(f.name), { method: "POST", headers: { "x-api-key": KEY, "Content-Type": "application/octet-stream" }, body: f })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error); }); })
+      .then(next).catch(function (x) { say("❌ " + f.name + ": " + x.message, true); });
+  })();
+}
+
+function exportDb() {
+  var blob = new Blob([JSON.stringify(DB)], { type: "application/json" });
+  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "album-backup.json"; a.click();
+}
+function importDb(inp) {
+  var f = inp.files[0]; if (!f) return;
+  if (!confirm("All current data will be replaced by this backup. Continue?")) return;
+  f.text().then(function (t) { return api("/api/import", { method: "POST", body: t }); }).then(reload).then(function () { say("✅ Restored"); }).catch(function (x) { say("❌ " + x.message); });
+}
+
+if (KEY) { api("/api/all").then(function (d) { DB = d; show(); }).catch(function () {}); }
+</script>
+</body>
+</html>
