@@ -15,9 +15,9 @@ const CATS = "album:cats"; // field = folder key, value = JSON array of items
 const META = "album:meta"; // field = folder key, value = {title, icon, order}
 const MAX_RAW = 4 * 1024 * 1024;      // Vercel request-body limit is 4.5MB
 const MAX_FETCH = 250 * 1024 * 1024;  // max size when the server copies a file from a link
-const DRIVE_URL = (process.env.DRIVE_URL || "").replace(/\/+$/, "");
+const drive = require("../lib/drive");
 const BLOB_LIMIT = Number(process.env.BLOB_LIMIT_GB || 1) * 1024 * 1024 * 1024;
-const isDriveUrl = u => !!DRIVE_URL && String(u || "").startsWith(DRIVE_URL + "/api/file/");
+const isDriveUrl = u => String(u || "").includes("/api/dfile/");
 const isBlobUrl = u => /\.public\.blob\.vercel-storage\.com\//.test(u || "");
 const isCatbox = u => /^https?:\/\/([\w-]+\.)?catbox\.moe\//i.test(u || "");
 
@@ -138,15 +138,11 @@ async function copyToBlob(url, kind) {
 }
 
 
-async function driveCall(path, opt) {
-  opt = opt || {};
-  return fetch(DRIVE_URL + path, Object.assign({}, opt, { headers: Object.assign({ "x-api-key": ADMIN_KEY, "Content-Type": "application/json" }, opt.headers || {}) }));
-}
 async function dropFiles(urls) {
   await dropBlobs(urls);
   for (const u of urls) {
     if (!isDriveUrl(u)) continue;
-    try { await driveCall(u.slice(DRIVE_URL.length), { method: "DELETE" }); } catch (e) { console.error("drive delete:", e.message); }
+    try { await drive.deleteFile(u.split("/api/dfile/")[1].split(".")[0]); } catch (e) { console.error("drive delete:", e.message); }
   }
 }
 
@@ -170,17 +166,13 @@ async function blobUsage(fresh) {
   return j;
 }
 async function driveStatus() {
-  if (!DRIVE_URL) return { connected: false };
-  try {
-    const r = await driveCall("/api/status");
-    const j = await r.json();
-    return Object.assign({ connected: true }, j);
-  } catch (e) { return { connected: true, ok: false, error: e.message }; }
+  if (!drive.configured()) return { connected: false };
+  return Object.assign({ connected: true }, await drive.status());
 }
 // where new files go: your choice, or "auto" = own storage until it is 90% full, then Google Drive
 async function pickDest() {
   const want = (await getSettings()).dest || "auto";
-  const haveDrive = !!DRIVE_URL, haveBlob = !!BLOB_TOKEN;
+  const haveDrive = drive.configured(), haveBlob = !!BLOB_TOKEN;
   if (want === "drive" && haveDrive) return "drive";
   if (want === "blob" && haveBlob) return "blob";
   if (haveBlob && haveDrive) {
@@ -188,22 +180,20 @@ async function pickDest() {
   }
   return haveBlob ? "blob" : haveDrive ? "drive" : "blob";
 }
-async function copyToDrive(url, kind) {
+async function copyToDrive(url, kind, base) {
   let ext = extOf(url);
   if (!MIME[ext]) ext = EXT_BY_KIND[kind] || "bin";
-  const r = await driveCall("/api/fetch", { method: "POST", body: JSON.stringify({ url, ext, name: "media_" + Date.now() + "." + ext }) });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok || !j.id) throw new Error("Google Drive: " + (j.error || ("HTTP " + r.status)));
-  return { url: DRIVE_URL + "/api/file/" + j.id + "." + ext, size: j.size };
+  const j = await drive.fetchIntoDrive(url, ext);
+  return { url: base + "/api/dfile/" + j.id + "." + ext, size: j.size };
 }
-async function copyAuto(url, kind) {
+async function copyAuto(url, kind, base) {
   const first = await pickDest();
   const order = first === "drive" ? ["drive", "blob"] : ["blob", "drive"];
   let err;
   for (const d of order) {
-    if (d === "drive" && !DRIVE_URL) continue;
+    if (d === "drive" && !drive.configured()) continue;
     if (d === "blob" && !BLOB_TOKEN) continue;
-    try { return d === "drive" ? await copyToDrive(url, kind) : { url: await copyToBlob(url, kind) }; } catch (e) { err = e; }
+    try { return d === "drive" ? await copyToDrive(url, kind, base) : { url: await copyToBlob(url, kind) }; } catch (e) { err = e; }
   }
   throw err || new Error("No storage is connected yet");
 }
@@ -246,8 +236,10 @@ module.exports = async function handler(req, res) {
   const rp = u.searchParams.get("path"); // vercel.json rewrite passes the original path here
   if (rp !== null && (p === "/api/index" || p === "/api")) p = "/api/" + rp.replace(/^\/+|\/+$/g, "");
   const M = req.method;
+  const siteBase = (req.headers["x-forwarded-proto"] || "https") + "://" + req.headers.host;
   try {
     if (M === "OPTIONS") return send(res, 204, "");
+    if (M === "GET" && p.startsWith("/api/dfile/")) return await drive.serveFile(req, res, p.slice("/api/dfile/".length));
 
     // ----- public (read only) -----
     if (M === "GET" && p === "/api/folders") return send(res, 200, (await loadAll()).folders);
@@ -295,7 +287,12 @@ module.exports = async function handler(req, res) {
       return send(res, 200, { redis: redisOk, blob: !!BLOB_TOKEN, version: "2.0" });
     }
     // where should new uploads go + storage meters
-    if (M === "GET" && p === "/api/dest") return send(res, 200, { dest: await pickDest(), driveUrl: DRIVE_URL });
+    if (M === "GET" && p === "/api/dest") return send(res, 200, { dest: await pickDest(), drive: drive.configured() });
+    if (M === "POST" && p === "/api/drive/session") {
+      const b = await getJson(req);
+      if (!b.name) return send(res, 400, { error: "name required" });
+      return send(res, 200, { sessionUrl: await drive.startSession(String(b.name).slice(0, 120), b.type || "application/octet-stream", Number(b.size) || 0, req.headers.origin || "") });
+    }
     if (M === "GET" && p === "/api/usage") {
       const fresh = u.searchParams.get("fresh") === "1";
       const out = { blob: { connected: !!BLOB_TOKEN, limit: BLOB_LIMIT }, drive: await driveStatus(), catbox: { count: 0 }, items: 0 };
@@ -345,7 +342,7 @@ module.exports = async function handler(req, res) {
       let url = b.url, size = b.size;
       const wantCopy = b.fetch !== undefined ? b.fetch : b.rehost;
       if (wantCopy && !isCatbox(url) && !isBlobUrl(url) && !isDriveUrl(url)) {
-        const c = await copyAuto(url, kind);
+        const c = await copyAuto(url, kind, siteBase);
         url = c.url; size = c.size || size;
       }
       return send(res, 200, await addItem(b.category, url, kind, b.name, size));
