@@ -705,7 +705,7 @@ function enqueue(files,folderKey){
   var list=Array.prototype.slice.call(files);
   api('/api/dest').then(function(d){
     if(d.dest==='blob'&&S.status&&!S.status.blob){toast('No storage is connected yet. See Settings.','err');return}
-    list.forEach(function(f){var u={id:Math.random().toString(36).slice(2),name:f.name,kind:kindForUpload(f),folder:folderKey,dest:d.dest,driveUrl:d.driveUrl,pct:0,st:'wait',msg:''};S.uploads.push(u);jobs.push({u:u,f:f})});
+    list.forEach(function(f){var u={id:Math.random().toString(36).slice(2),name:f.name,kind:kindForUpload(f),folder:folderKey,dest:d.dest,pct:0,st:'wait',msg:''};S.uploads.push(u);jobs.push({u:u,f:f})});
     tray();pump();
   }).catch(function(e){toast(e.message,'err')});
 }
@@ -736,7 +736,7 @@ function blobUpload(f,u){
 }
 function driveUpload(f,u){
   var ext=(f.name.split('.').pop()||'bin').toLowerCase(),type=f.type||'application/octet-stream';
-  return fetch(u.driveUrl+'/api/session',{method:'POST',headers:{'x-api-key':S.key,'Content-Type':'application/json'},body:JSON.stringify({name:f.name,type:type,size:f.size})})
+  return fetch('/api/drive/session',{method:'POST',headers:{'x-api-key':S.key,'Content-Type':'application/json'},body:JSON.stringify({name:f.name,type:type,size:f.size})})
     .then(function(r){return r.json().then(function(j){if(!r.ok||!j.sessionUrl)throw new Error('Google Drive: '+(j.error||('HTTP '+r.status)));return j.sessionUrl})})
     .then(function(sessionUrl){return new Promise(function(res,rej){
       var x=new XMLHttpRequest();x.open('PUT',sessionUrl);x.setRequestHeader('Content-Type',type);
@@ -745,7 +745,7 @@ function driveUpload(f,u){
       x.onerror=function(){rej(new Error('Network error while uploading to Google Drive'))};
       x.send(f);
     })})
-    .then(function(file){return u.driveUrl+'/api/file/'+file.id+'.'+ext});
+    .then(function(file){return location.origin+'/api/dfile/'+file.id+'.'+ext});
 }
 function doUpload(j){
   var u=j.u,f=j.f;u.st='up';tray();
