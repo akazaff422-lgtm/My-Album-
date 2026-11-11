@@ -15,9 +15,22 @@
   --text:#f5f1ff; --muted:#b5aae3; --dim:#8c80c4;
   --pink:#ff3d9a; --amber:#ffb020; --cyan:#22d3ee; --mint:#34e3a0; --violet:#8b5cf6; --coral:#ff6b4a; --lime:#b6f04a;
   --danger:#ff5d73; --ok:#34e3a0;
-  --r:18px; --ease:cubic-bezier(.22,1,.36,1);
+  --hero:linear-gradient(135deg,#3b1d8f 0%,#7a1fa2 48%,#ff3d9a 100%);--r:18px; --ease:cubic-bezier(.22,1,.36,1);
   color-scheme:dark;
 }
+/* ---------- themes ---------- */
+html[data-theme="aurora"]{--bg:#04161a;--bg2:#072a30;--panel:#0b3a40;--panel2:#0f4a52;--line:#1f6b72;--line2:#2d8f94;--muted:#9fd6d6;--dim:#6fb0b0;
+  --pink:#19e6a1;--coral:#22d3ee;--violet:#38bdf8;--cyan:#7cf5ff;--mint:#9dffb0;--amber:#ffe066;--lime:#c8ff5a;--hero:linear-gradient(135deg,#053b46 0%,#0a7a7a 48%,#19e6a1 100%)}
+html[data-theme="sunset"]{--bg:#1c0b12;--bg2:#2a1019;--panel:#3a1623;--panel2:#4a1c2c;--line:#7a3045;--line2:#a24560;--muted:#e0b3bd;--dim:#b98593;
+  --pink:#ff7a45;--coral:#ff3d71;--violet:#ff9f1c;--cyan:#ffd166;--mint:#ffb86b;--amber:#ffd166;--lime:#ffe29a;--hero:linear-gradient(135deg,#5a1530 0%,#c2410c 50%,#ff9f1c 100%)}
+html[data-theme="ocean"]{--bg:#06122b;--bg2:#0b1d44;--panel:#102a5c;--panel2:#16376f;--line:#2a519a;--line2:#3d6bc0;--muted:#a9c1ee;--dim:#7c98cf;
+  --pink:#3b82f6;--coral:#06b6d4;--violet:#6366f1;--cyan:#38bdf8;--mint:#2dd4bf;--amber:#fbbf24;--lime:#a3e635;--hero:linear-gradient(135deg,#0b2a6b 0%,#1d4ed8 50%,#06b6d4 100%)}
+html[data-theme="royal"]{--bg:#0d0a05;--bg2:#16110a;--panel:#1f1810;--panel2:#2a2014;--line:#4d3d22;--line2:#7a6233;--muted:#cbbd9b;--dim:#9c8d6c;
+  --pink:#f5b301;--coral:#ff8a3d;--violet:#c18f2b;--cyan:#ffe08a;--mint:#e9c46a;--amber:#ffd166;--lime:#f1e3a1;--hero:linear-gradient(135deg,#2a1d05 0%,#7a5a10 50%,#f5b301 100%)}
+html[data-theme="amoled"]{--bg:#000;--bg2:#0a0a0f;--panel:#12121a;--panel2:#1a1a26;--line:#2a2a3c;--line2:#3d3d58;--hero:linear-gradient(135deg,#1b1038 0%,#4a1670 50%,#ff3d9a 100%)}
+html[data-theme="rose"]{--bg:#1a0a1c;--bg2:#27102a;--panel:#361638;--panel2:#471c4a;--line:#7a3a7e;--line2:#a354a8;--muted:#e3b9e6;--dim:#b98abd;
+  --pink:#ff5fb3;--coral:#ff8fa3;--violet:#c77dff;--cyan:#ffb3e6;--mint:#ffd6f0;--amber:#ffc2e2;--lime:#f5b3ff;--hero:linear-gradient(135deg,#4a1260 0%,#b5179e 50%,#ff5fb3 100%)}
+
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0}
 body{
@@ -33,7 +46,7 @@ svg.i.fill{fill:currentColor;stroke:none}
 
 /* ---------- animated backdrop ---------- */
 .orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;
-  background:radial-gradient(900px 600px at 50% 120%,rgba(139,92,246,.35),transparent 60%),var(--bg)}
+  background:radial-gradient(900px 600px at 50% 120%,color-mix(in srgb,var(--violet) 35%,transparent),transparent 60%),var(--bg)}
 .orb{position:absolute;border-radius:50%;filter:blur(70px);opacity:.55;animation:drift 18s ease-in-out infinite alternate}
 .o1{width:380px;height:380px;background:var(--pink);top:-120px;right:-100px}
 .o2{width:340px;height:340px;background:var(--cyan);top:30%;left:-140px;animation-duration:22s;animation-delay:-6s}
@@ -62,7 +75,7 @@ svg.i.fill{fill:currentColor;stroke:none}
 
 /* ---------- controls ---------- */
 .field{width:100%;padding:13px 15px;border-radius:14px;background:var(--bg2);border:1.5px solid var(--line);outline:none;transition:border-color .2s,box-shadow .2s}
-.field:focus{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(34,211,238,.15)}
+.field:focus{border-color:var(--cyan);box-shadow:0 0 0 4px color-mix(in srgb,var(--cyan) 15%,transparent)}
 .field::placeholder{color:var(--dim)}
 textarea.field{resize:vertical;min-height:90px}
 select.field{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
@@ -70,7 +83,7 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:14px;font-weight:600;
   position:relative;overflow:hidden;transition:transform .15s var(--ease),filter .2s,box-shadow .2s;white-space:nowrap}
 .btn:active{transform:scale(.96)}
-.btn.primary{color:#fff;background:linear-gradient(90deg,var(--pink),var(--coral));box-shadow:0 8px 24px rgba(255,61,154,.3)}
+.btn.primary{color:#fff;background:linear-gradient(90deg,var(--pink),var(--coral));box-shadow:0 8px 24px color-mix(in srgb,var(--pink) 30%,transparent)}
 .btn.cyan{color:#10253a;background:linear-gradient(90deg,var(--cyan),var(--mint))}
 .btn.amber{color:#2a1a00;background:linear-gradient(90deg,var(--amber),var(--lime))}
 .btn.ghost{border:1.5px solid var(--line2);background:rgba(255,255,255,.03)}
@@ -91,7 +104,7 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
 .tabs{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;gap:6px;padding:6px;border-radius:22px;
   background:rgba(26,15,69,.88);border:1px solid var(--line);backdrop-filter:blur(14px);box-shadow:0 14px 40px rgba(0,0,0,.45)}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:16px;font-size:12.5px;font-weight:600;color:var(--muted);transition:background .25s,color .25s}
-.tab.on{background:linear-gradient(135deg,rgba(255,61,154,.25),rgba(139,92,246,.3));color:#fff}
+.tab.on{background:linear-gradient(135deg,color-mix(in srgb,var(--pink) 25%,transparent),color-mix(in srgb,var(--violet) 30%,transparent));color:#fff}
 @media(min-width:900px){
   .side{display:flex;flex-direction:column;gap:18px;position:fixed;top:0;bottom:0;left:0;width:250px;padding:22px 16px;border-right:1px solid var(--line);background:rgba(18,10,48,.72);backdrop-filter:blur(12px);z-index:5}
   .main{margin-left:250px;max-width:none;padding:28px 34px 60px}
@@ -103,14 +116,14 @@ select.field{appearance:none;background-image:linear-gradient(45deg,transparent 
 .nav{display:flex;flex-direction:column;gap:4px}
 .nav button{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;color:var(--muted);font-weight:600;text-align:left;transition:background .2s,color .2s}
 .nav button:hover{background:rgba(255,255,255,.06)}
-.nav button.on{color:#fff;background:linear-gradient(90deg,rgba(255,61,154,.28),rgba(139,92,246,.18))}
+.nav button.on{color:#fff;background:linear-gradient(90deg,color-mix(in srgb,var(--pink) 28%,transparent),color-mix(in srgb,var(--violet) 18%,transparent))}
 .sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:8px}
 
 /* ---------- pages ---------- */
 .page{animation:pagein .45s var(--ease) both}
 @keyframes pagein{from{opacity:0;transform:translateY(14px)}}
 .hero{display:flex;align-items:center;gap:14px;padding:16px;border-radius:24px;position:relative;overflow:hidden;
-  background:linear-gradient(135deg,#3b1d8f 0%,#7a1fa2 48%,#ff3d9a 100%);box-shadow:0 16px 44px rgba(255,61,154,.25)}
+  background:var(--hero);box-shadow:0 16px 44px color-mix(in srgb,var(--pink) 25%,transparent)}
 .hero::after{content:"";position:absolute;right:-50px;top:-50px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.12)}
 .hero>*{position:relative;z-index:1}
 .hero .sub{margin:2px 0 0;opacity:.9;font-size:14px}
@@ -155,7 +168,7 @@ h2.t{display:flex;align-items:center;gap:10px;margin:6px 0 12px;font-family:"Unb
 .fhead h2{margin:0;font-family:"Unbounded",sans-serif;font-size:clamp(17px,4.6vw,24px);display:flex;align-items:center;gap:10px}
 .fhead h2 span.e{font-size:1.3em}
 .drop{border:2px dashed var(--line2);border-radius:20px;padding:22px 14px;text-align:center;color:var(--muted);transition:background .2s,border-color .2s,transform .2s;cursor:pointer}
-.drop:hover,.drop.over{background:rgba(34,211,238,.08);border-color:var(--cyan);transform:scale(1.01)}
+.drop:hover,.drop.over{background:color-mix(in srgb,var(--cyan) 8%,transparent);border-color:var(--cyan);transform:scale(1.01)}
 .drop svg{width:34px;height:34px;color:var(--cyan)}
 .mrow{display:grid;grid-template-columns:auto 76px 1fr;gap:12px;align-items:center;padding:10px;border-radius:18px;margin-bottom:10px;
   background:rgba(33,21,90,.7);border:1px solid var(--line);animation:rowin .45s var(--ease) both;animation-delay:calc(var(--i)*30ms);transition:border-color .2s}
@@ -215,7 +228,7 @@ h2.t{display:flex;align-items:center;gap:10px;margin:6px 0 12px;font-family:"Unb
 .sheet .row .btn{flex:1}
 .emo{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:10px 0}
 .emo button{font-size:22px;padding:6px 0;border-radius:12px;border:1.5px solid transparent;background:var(--bg2);transition:transform .15s}
-.emo button:hover{transform:scale(1.15)}.emo button.on{border-color:var(--pink);background:rgba(255,61,154,.2)}
+.emo button:hover{transform:scale(1.15)}.emo button.on{border-color:var(--pink);background:color-mix(in srgb,var(--pink) 20%,transparent)}
 .plist{display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto}
 .plist button{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:14px;background:var(--bg2);border:1px solid var(--line);text-align:left;transition:border-color .2s}
 .plist button:hover{border-color:var(--cyan)}
@@ -237,18 +250,18 @@ h2.t{display:flex;align-items:center;gap:10px;margin:6px 0 12px;font-family:"Unb
 #intro.out{opacity:0;transform:scale(1.18);filter:blur(10px);pointer-events:none}
 #introCv{position:absolute;inset:0;width:100%;height:100%}
 .ibeam{position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:linear-gradient(90deg,transparent,#fff,var(--cyan),var(--pink),transparent);
-  box-shadow:0 0 30px 6px rgba(34,211,238,.6),0 0 60px 12px rgba(255,61,154,.4);transform:scaleX(0);opacity:1;animation:beam 1.1s var(--ease) .15s both,beamfade .8s ease 1.2s forwards}
+  box-shadow:0 0 30px 6px color-mix(in srgb,var(--cyan) 60%,transparent),0 0 60px 12px color-mix(in srgb,var(--pink) 40%,transparent);transform:scaleX(0);opacity:1;animation:beam 1.1s var(--ease) .15s both,beamfade .8s ease 1.2s forwards}
 @keyframes beam{0%{transform:scaleX(0)}60%{transform:scaleX(1);height:2px}100%{transform:scaleX(1);height:2px}}
 @keyframes beamfade{to{opacity:0;transform:scaleX(1) scaleY(18)}}
 .istage{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px}
 .iav{position:relative;width:112px;height:112px;display:grid;place-items:center;opacity:0;animation:avin .9s var(--ease) 1.0s both}
-.iring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,var(--amber),var(--pink),var(--cyan),var(--mint),var(--amber));animation:spin 4s linear infinite;box-shadow:0 0 50px rgba(255,61,154,.55)}
+.iring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,var(--amber),var(--pink),var(--cyan),var(--mint),var(--amber));animation:spin 4s linear infinite;box-shadow:0 0 50px color-mix(in srgb,var(--pink) 55%,transparent)}
 .iav b{position:absolute;inset:6px;z-index:1;border-radius:50%;background:#fff;display:grid;place-items:center;color:#2a0d5e;font-family:"Unbounded",sans-serif;font-weight:800;font-size:38px}
 .icrown{position:absolute;z-index:3;top:-34px;left:50%;margin-left:-22px;font-size:44px;font-style:normal;opacity:0;animation:crown 1s cubic-bezier(.34,1.56,.64,1) 1.35s both;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
 @keyframes avin{from{opacity:0;transform:scale(.2) rotate(-120deg)}to{opacity:1;transform:none}}
 @keyframes crown{from{opacity:0;transform:translateY(-160px) rotate(-30deg)}60%{opacity:1}to{opacity:1;transform:translateY(0) rotate(-8deg)}}
 .iname{margin:26px 0 0;font-family:"Unbounded",sans-serif;font-weight:800;font-size:clamp(28px,9vw,52px);letter-spacing:2px;line-height:1.1;display:flex;flex-wrap:wrap;justify-content:center;color:#fff}
-.iname .ch{display:inline-block;min-width:.28em;opacity:0;text-shadow:0 0 24px rgba(255,61,154,.9),0 0 50px rgba(139,92,246,.7);animation:chin .8s var(--ease) both;animation-delay:calc(1.9s + var(--n)*75ms)}
+.iname .ch{display:inline-block;min-width:.28em;opacity:0;text-shadow:0 0 24px color-mix(in srgb,var(--pink) 90%,transparent),0 0 50px color-mix(in srgb,var(--violet) 70%,transparent);animation:chin .8s var(--ease) both;animation-delay:calc(1.9s + var(--n)*75ms)}
 @keyframes chin{from{opacity:0;transform:translateY(34px) scale(1.5);filter:blur(14px)}to{opacity:1;transform:none;filter:blur(0)}}
 .ibadge{margin-top:16px;padding:3px 18px;border-radius:99px;font-weight:700;color:#1a0b3d;background:linear-gradient(90deg,var(--amber),var(--lime));opacity:0;animation:slideb .7s var(--ease) 2.9s both}
 @keyframes slideb{from{opacity:0;transform:translateX(-40px) scale(.8)}to{opacity:1;transform:none}}
@@ -318,7 +331,46 @@ h2.t{display:flex;align-items:center;gap:10px;margin:6px 0 12px;font-family:"Unb
 .fold{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:1px 10px;border-radius:99px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.07);border:1px solid var(--line)}
 .filebox{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--text)}
 .filebox svg{width:64px;height:64px}
+
+/* storage tiles */
+.stiles{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+@media(min-width:700px){.stiles{grid-template-columns:repeat(3,1fr)}}
+.stile{position:relative;display:flex;align-items:center;gap:12px;padding:14px;border-radius:20px;text-align:left;overflow:hidden;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--c) 22%,transparent),rgba(255,255,255,.03));border:1.5px solid color-mix(in srgb,var(--c) 50%,transparent);
+  animation:pop .55s var(--ease) both;transition:transform .2s var(--ease),border-color .2s}
+.stile:nth-child(2){animation-delay:.08s}.stile:nth-child(3){animation-delay:.16s}.stile:nth-child(4){animation-delay:.24s}
+.stile::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s var(--ease)}
+.stile:hover::after{transform:translateX(120%)}
+.stile:hover{transform:translateY(-3px);border-color:var(--c)}.stile:active{transform:scale(.97)}
+.sic{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-size:26px;background:color-mix(in srgb,var(--c) 28%,transparent);border:1px solid color-mix(in srgb,var(--c) 60%,transparent)}
+.sbody{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.sbody b{font-size:16.5px}.sbody small{color:var(--muted);font-size:13px}
+.sbar{height:8px;border-radius:99px;background:var(--bg2);overflow:hidden;margin-top:6px}
+.sbar i{display:block;height:100%;width:0;border-radius:99px;background:var(--c);transition:width 1.1s var(--ease)}
+.sbar i.warn{background:var(--amber)}.sbar i.bad{background:var(--danger)}
+/* select mode */
+.mrow,.mcard{position:relative}
+.chk{position:absolute;top:8px;right:8px;z-index:3;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(10,4,32,.7);border:2px solid var(--line2);color:transparent;transition:background .15s,border-color .15s,transform .15s}
+.chk svg{width:16px;height:16px;stroke-width:3}
+.chk.on{background:var(--mint);border-color:var(--mint);color:#10253a;transform:scale(1.08)}
+.selrow-on{outline:2px solid var(--mint);outline-offset:-2px}
+#selbar{position:fixed;z-index:26;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;display:none;
+  align-items:center;gap:8px;padding:10px;border-radius:20px;background:rgba(26,15,69,.96);border:1.5px solid var(--mint);box-shadow:0 18px 44px rgba(0,0,0,.5);backdrop-filter:blur(12px);animation:rise .35s var(--ease) both;flex-wrap:wrap}
+#selbar.on{display:flex}
+#selbar .cnt{font-weight:700;margin-right:auto;padding-left:4px}
+#selbar .btn{padding:9px 12px;font-size:14px}
+@media(min-width:900px){#selbar{bottom:20px;left:270px}}
+body.selmode #tray{bottom:calc(170px + env(safe-area-inset-bottom,0px))}
+@media(min-width:900px){body.selmode #tray{bottom:90px}}
+.mrow.noanimrow,.noanim .mrow,.noanim .mcard,.noanim .frow,.noanim .tile,.noanim .stile,.noanim .rcard{animation:none!important}
+/* theme picker */
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.th{display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:16px;border:2px solid var(--line);background:rgba(255,255,255,.03);text-align:center;font-weight:600;font-size:13.5px;transition:transform .2s var(--ease),border-color .2s}
+.th:hover{transform:translateY(-2px)}.th.on{border-color:var(--text)}
+.th i{display:block;height:46px;border-radius:11px;background:linear-gradient(135deg,var(--a),var(--b));box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.th span{color:var(--text)}
 </style>
+<script>try{var __t=localStorage.getItem("albumTheme");if(__t&&__t!=="neon")document.documentElement.dataset.theme=__t}catch(e){}</script>
 </head>
 <body>
 <div id="intro" role="presentation" aria-hidden="true">
@@ -366,6 +418,7 @@ h2.t{display:flex;align-items:center;gap:10px;margin:6px 0 12px;font-family:"Unb
   <nav class="tabs" id="tabs"></nav>
 </div>
 
+<div id="selbar"></div>
 <div id="tray"></div>
 <div id="toasts"></div>
 <div id="modalRoot"></div>
@@ -392,6 +445,8 @@ var P={
  gif:'<rect x="2" y="6" width="20" height="12" rx="3"/><path d="M7 10.5a2 2 0 1 0 0 3h1.5V12M12 10v4M16.5 10H15v4M15 12h1.2"/>',
  sticker:'<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>',
  file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5"/>',
+ cloud:'<path d="M7 18a4 4 0 0 1-.5-7.97A6 6 0 0 1 18 9a4.5 4.5 0 0 1 .5 9z"/>',
+ swap:'<path d="M7 7h11l-3-3M17 17H6l3 3"/>',
  tag:'<path d="M20 12l-8 8-9-9V3h8z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
  grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
@@ -399,7 +454,7 @@ var P={
 function ico(n,c){ if(n==='play') return '<svg class="i fill" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>'; return '<svg class="i '+(c||'')+'" viewBox="0 0 24 24">'+P[n]+'</svg>'; }
 
 /* ============ state & helpers ============ */
-var S={view:localStorage.getItem('albumView')||'list',filter:'all',filterFor:'',asSticker:false,usage:null,key:localStorage.getItem('albumKey')||'',db:{categories:{},meta:{},folders:[]},status:null,manage:false,q:'',upTab:'device',upFolder:'',pickFolder:'',uploads:[],loaded:false};
+var S={sel:{},selMode:false,sfilter:'all',view:localStorage.getItem('albumView')||'list',filter:'all',filterFor:'',asSticker:false,usage:null,key:localStorage.getItem('albumKey')||'',db:{categories:{},meta:{},folders:[]},status:null,manage:false,q:'',upTab:'device',upFolder:'',pickFolder:'',uploads:[],loaded:false};
 var COLORS=['#ff3d9a','#ffb020','#22d3ee','#34e3a0','#8b5cf6','#ff6b4a','#b6f04a'];
 var EMOJIS=['📁','🎬','🌙','💔','🎎','🐾','🎧','🔥','💑','🌹','🖼️','🌌','🦁','🎶','🐱','🎮','⚽','👧','🤝','🏏','🎵','⭐','😂','🎤','📸','🚀','🌈','🍿','🎭','🏍️','🕌','🎨'];
 var PRESET=[['Funny Video','🎬'],['Islamic Video','🌙'],['Sad Video','💔'],['Anime Video','🎎'],['Cartoon Video','🐾'],['LoFi Video','🎧'],['Horny Video','🔥'],['Couple Video','💑'],['Flower Video','🌹'],['Random Photo','🖼️'],['Aesthetic Video','🌌'],['Sigma Rule','🦁'],['Lyrics Video','🎶'],['Cat Video','🐱'],['18+ Video','🚫'],['Free Fire Video','🎮'],['Football Video','⚽'],['Girl Video','👧'],['Friends Video','🤝'],['Cricket Video','🏏']];
@@ -499,22 +554,25 @@ function buildNav(){
 
 /* ============ router ============ */
 function parse(){var h=location.hash.replace(/^#\/?/,'');var a=h.split('/');return{v:a[0]||'home',k:decodeURIComponent(a.slice(1).join('/')||'')}}
-function go(){render(false)}
+function go(){S.selMode=false;S.sel={};render(false)}
 window.addEventListener('hashchange',function(){if(S.loaded)go()});
 function render(keep){
   var r=parse(),v=$('view'),html;
-  document.querySelectorAll('[data-nav]').forEach(function(b){var n=b.dataset.nav;b.classList.toggle('on',(n===''&&(r.v==='home'||r.v==='folder'||r.v==='library'))||n===r.v)});
+  document.querySelectorAll('[data-nav]').forEach(function(b){var n=b.dataset.nav;b.classList.toggle('on',(n===''&&(r.v==='home'||r.v==='folder'||r.v==='library'||r.v==='storage'))||n===r.v)});
   if(r.v==='folder'){if(!folderOf(r.k)){location.hash='#/';return}html=vFolder(r.k)}
   else if(r.v==='library')html=vLibrary(r.k||'all');
+  else if(r.v==='storage')html=vStorage(r.k||'blob');
   else if(r.v==='upload')html=vUpload();
   else if(r.v==='settings')html=vSettings();
   else html=vHome();
+  v.classList.toggle('noanim',!!keep);
   v.innerHTML=html;
   if(keep){var pg=v.firstElementChild;if(pg)pg.style.animation='none'}
   v.querySelectorAll('[data-to]').forEach(countUp);
   animateDonut();
   lazy();
   if(r.v==='home'||r.v==='settings'){fillUsage();if(!keep||!S.usage)loadUsage(false)}
+  selbar();
   if(!keep)window.scrollTo({top:0});
   if(r.v==='settings')loadStatus().then(function(){var c=$('stBox');if(c)c.innerHTML=stBox()});
 }
@@ -552,9 +610,10 @@ function loadUsage(fresh){
   return api('/api/usage'+(fresh?'?fresh=1':'')).then(function(u){S.usage=u;fillUsage();return u}).catch(function(){});
 }
 function fillUsage(){
+  var tl=$('stiles');if(tl)tl.innerHTML=tilesHtml();
   var a=$('storBody');if(a){a.innerHTML=storageHtml(S.usage)}
   var b=$('storSet');if(b){b.innerHTML=storageHtml(S.usage)+destHtml(S.usage)}
-  document.querySelectorAll('.mbar i[data-w]').forEach(function(el){requestAnimationFrame(function(){requestAnimationFrame(function(){el.style.width=el.dataset.w+'%'})})});
+  document.querySelectorAll('.mbar i[data-w],.sbar i[data-w]').forEach(function(el){requestAnimationFrame(function(){requestAnimationFrame(function(){el.style.width=el.dataset.w+'%'})})});
 }
 /* ============ views ============ */
 function owner(){return '<div class="hero"><div class="avatar"><i class="crown">👑</i><b>JV</b></div><div><span class="badge">Owner</span><h1 class="oname">JABED VAO</h1><p class="sub">Album Studio</p></div></div>'}
@@ -596,7 +655,7 @@ function vHome(){
   var h='<div class="page">'+owner();
   h+='<div class="card lib" style="margin-top:14px"><div class="libtop"><div class="dw">'+donut(st)+'<div class="dc"><b data-to="'+st.total+'">0</b><span>items</span></div></div><div class="li"><h3 style="margin:0 0 6px">'+ico('folder')+'My library</h3><div class="muted small">'+fs.length+' folder'+(fs.length===1?'':'s')+'</div>'+(st.bytes?'<div class="muted small">Known size: '+fmt(st.bytes)+'</div>':'')+'<button class="btn ghost" style="margin-top:10px;padding:7px 14px;font-size:13.5px" data-act="lib" data-t="all">See everything</button></div></div>'+
     '<div class="tiles">'+TYPES.map(function(t){var d=st.by[t.k];return '<button class="tile" data-act="lib" data-t="'+t.k+'" style="--c:'+t.c+'"><span class="tic">'+ico(t.ico)+'</span><b data-to="'+d.n+'">0</b><span class="tl">'+t.label+'</span>'+(d.bytes?'<small>'+fmt(d.bytes)+'</small>':'')+'</button>'}).join('')+'</div></div>';
-  h+='<div class="card"><h3>'+ico('db')+'Storage <button class="btn ghost" style="margin-left:auto;padding:6px 12px;font-size:13px" data-nav="settings">Details</button></h3><div id="storBody">'+storageHtml(S.usage)+'</div></div>';
+  h+='<h2 class="t">'+ico('db')+'Storage</h2><div class="stiles" id="stiles">'+tilesHtml()+'</div>';
   h+=recentHtml();
   h+='<h2 class="t">🎵 Album Folders 🎶</h2><div class="bar"><div class="search">'+ico('search')+'<input class="field" id="q" placeholder="Search folders" value="'+esc(S.q)+'"></div><button class="btn primary" data-act="newFolder">'+ico('plus')+'New folder</button>'+(fs.length?'<button class="btn ghost" data-act="manage">'+(S.manage?'Done':'Manage')+'</button>':'')+'</div>';
   if(!fs.length){
@@ -623,11 +682,12 @@ function thumb(it){
 }
 function mediaRow(it,k,i,showF,f,idx){
   var t=typeOf(it.kind),n=i+1,name=esc(it.name||(t.one+' '+n));
-  var acts='<button class="ib" aria-label="Open" data-act="play" data-k="'+esc(k)+'" data-i="'+i+'">'+ico('play')+'</button><button class="ib" aria-label="Download" data-act="dl" data-k="'+esc(k)+'" data-i="'+i+'">'+ico('download')+'</button><button class="ib" aria-label="Rename" data-act="ren" data-id="'+it.id+'">'+ico('edit')+'</button><button class="ib" aria-label="Change type" data-act="tag" data-id="'+it.id+'">'+ico('tag')+'</button><button class="ib" aria-label="Move to another folder" data-act="mv" data-id="'+it.id+'" data-k="'+esc(k)+'">'+ico('move')+'</button><button class="ib" aria-label="Copy link" data-act="cp" data-k="'+esc(k)+'" data-i="'+i+'">'+ico('copy')+'</button><button class="ib red" aria-label="Delete" data-act="del" data-id="'+it.id+'">'+ico('trash')+'</button>';
+  var chk=S.selMode?'<button class="chk'+(S.sel[it.id]?' on':'')+'" data-act="selone" data-id="'+it.id+'" aria-label="Select">'+ico('check')+'</button>':'';
+  var acts='<button class="ib" aria-label="Open" data-act="play" data-k="'+esc(k)+'" data-i="'+i+'">'+ico('play')+'</button><button class="ib" aria-label="Download" data-act="dl" data-k="'+esc(k)+'" data-i="'+i+'">'+ico('download')+'</button><button class="ib" aria-label="Rename" data-act="ren" data-id="'+it.id+'">'+ico('edit')+'</button><button class="ib" aria-label="Change type" data-act="tag" data-id="'+it.id+'">'+ico('tag')+'</button><button class="ib" aria-label="Transfer to another storage" data-act="xfer" data-id="'+it.id+'">'+ico('cloud')+'</button><button class="ib" aria-label="Move to another folder" data-act="mv" data-id="'+it.id+'" data-k="'+esc(k)+'">'+ico('move')+'</button><button class="ib" aria-label="Copy link" data-act="cp" data-k="'+esc(k)+'" data-i="'+i+'">'+ico('copy')+'</button><button class="ib red" aria-label="Delete" data-act="del" data-id="'+it.id+'">'+ico('trash')+'</button>';
   if(S.view==='grid'&&!showF){
-    return '<div class="mcard" style="--i:'+Math.min(idx,14)+';--c:'+t.c+'"><span class="bn">#'+n+'</span><div class="thumb" data-act="play" data-k="'+esc(k)+'" data-i="'+i+'">'+thumb(it)+'</div><div class="kt"><b style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</b><span class="kind" style="--c:'+t.c+';margin:0">'+t.one+'</span></div><div class="macts">'+acts+'</div></div>';
+    return '<div class="mcard'+(S.sel[it.id]?' selrow-on':'')+'" data-sid="'+it.id+'" style="--i:'+Math.min(idx,14)+';--c:'+t.c+'">'+chk+'<span class="bn">#'+n+'</span><div class="thumb" data-act="play" data-k="'+esc(k)+'" data-i="'+i+'">'+thumb(it)+'</div><div class="kt"><b style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</b><span class="kind" style="--c:'+t.c+';margin:0">'+t.one+'</span></div><div class="macts">'+acts+'</div></div>';
   }
-  return '<div class="mrow" style="--i:'+Math.min(idx,14)+';--c:'+t.c+'"><div class="mnum">#'+n+'</div><div class="thumb" data-act="play" data-k="'+esc(k)+'" data-i="'+i+'">'+thumb(it)+'</div><div class="minfo"><b>'+name+'</b><div class="muted small"><span class="kind" style="--c:'+t.c+'">'+t.one+'</span>'+(it.size?fmt(it.size)+', ':'')+ago(it.added)+'</div>'+(showF?'<div class="fold">'+esc(f.icon)+' '+esc(f.title)+'</div>':'')+'</div><div class="macts">'+acts+'</div></div>';
+  return '<div class="mrow'+(S.sel[it.id]?' selrow-on':'')+'" data-sid="'+it.id+'" style="--i:'+Math.min(idx,14)+';--c:'+t.c+'">'+chk+'<div class="mnum">#'+n+'</div><div class="thumb" data-act="play" data-k="'+esc(k)+'" data-i="'+i+'">'+thumb(it)+'</div><div class="minfo"><b>'+name+'</b><div class="muted small"><span class="kind" style="--c:'+t.c+'">'+t.one+'</span>'+(it.size?fmt(it.size)+', ':'')+ago(it.added)+'</div>'+(showF?'<div class="fold">'+esc(f.icon)+' '+esc(f.title)+'</div>':'')+'</div><div class="macts">'+acts+'</div></div>';
 }
 function filterChips(cnt,total,cur,act){
   return '<div class="fchips">'+['all'].concat(TYPES.map(function(x){return x.k}).filter(function(x){return cnt[x]})).map(function(x){
@@ -640,7 +700,7 @@ function vFolder(k){
   if(S.filter!=='all'&&!cnt[S.filter])S.filter='all';
   var h='<div class="page" style="--c:'+c+'"><div class="fhead"><button class="ib" aria-label="Back" data-act="back">'+ico('back')+'</button><div class="ti"><h2><span class="e">'+esc(f.icon)+'</span>'+esc(f.title)+'</h2><div class="muted small">'+items.length+' item'+(items.length===1?'':'s')+'</div></div><button class="ib" aria-label="Switch view" data-act="viewtoggle">'+ico(S.view==='grid'?'list':'grid')+'</button></div>';
   if(items.length)h+='<div class="tcrow">'+tchips(cnt)+'</div>';
-  h+='<div class="bar"><button class="btn primary" data-act="pick" data-k="'+esc(k)+'">'+ico('upload')+'Upload</button><button class="btn cyan" data-act="addlink" data-k="'+esc(k)+'">'+ico('link')+'Add link</button><button class="btn ghost" data-act="fedit" data-k="'+esc(k)+'">'+ico('edit')+'Edit folder</button><button class="btn ghost" data-act="fdel" data-k="'+esc(k)+'">'+ico('trash')+'Delete folder</button></div>';
+  h+='<div class="bar"><button class="btn primary" data-act="pick" data-k="'+esc(k)+'">'+ico('upload')+'Upload</button><button class="btn cyan" data-act="addlink" data-k="'+esc(k)+'">'+ico('link')+'Add link</button><button class="btn ghost" data-act="fedit" data-k="'+esc(k)+'">'+ico('edit')+'Edit folder</button><button class="btn ghost" data-act="fdel" data-k="'+esc(k)+'">'+ico('trash')+'Delete folder</button><button class="btn ghost" data-act="selmode">'+ico('check')+(S.selMode?'Cancel select':'Select')+'</button></div>';
   if(!items.length){
     h+='<div class="drop" data-act="pick" data-k="'+esc(k)+'">'+ico('upload')+'<h3 style="margin:8px 0 2px;color:var(--text)">This folder is empty</h3><div>Drop videos, photos, audio, gifs or files here, or tap to upload</div></div>';
   } else {
@@ -656,7 +716,7 @@ function vLibrary(kk){
   var rows=[],cnt={};TYPES.forEach(function(x){cnt[x.k]=0});
   S.db.folders.forEach(function(f){itemsOf(f.key).forEach(function(it,i){var tk=typeOf(it.kind).k;cnt[tk]++;if(kk==='all'||tk===kk)rows.push({it:it,k:f.key,i:i,f:f})})});
   var total=0;TYPES.forEach(function(x){total+=cnt[x.k]});
-  var h='<div class="page"><div class="fhead"><button class="ib" aria-label="Back" data-act="back">'+ico('back')+'</button><div class="ti"><h2>'+ico(t.ico)+' '+t.label+'</h2><div class="muted small">'+rows.length+' item'+(rows.length===1?'':'s')+' across all folders</div></div></div>';
+  var h='<div class="page"><div class="fhead"><button class="ib" aria-label="Back" data-act="back">'+ico('back')+'</button><div class="ti"><h2>'+ico(t.ico)+' '+t.label+'</h2><div class="muted small">'+rows.length+' item'+(rows.length===1?'':'s')+' across all folders</div></div><button class="ib" aria-label="Select" data-act="selmode">'+ico('check')+'</button></div>';
   h+=filterChips(cnt,total,kk,'lib');
   if(!rows.length)h+='<div class="empty"><span class="big">🫥</span><h3>Nothing here yet</h3><p>Upload some '+t.label.toLowerCase()+' and they will show up here.</p></div>';
   else h+=rows.map(function(x,idx){return mediaRow(x.it,x.k,x.i,true,x.f,idx)}).join('');
@@ -689,7 +749,7 @@ function stBox(){
     (s.blob?'':'<p class="small" style="margin:0;color:var(--amber)">Storage is not connected yet. In Vercel open Storage, create a Blob store, connect it to this project, then Redeploy. Uploads from your device need it.</p>');
 }
 function vSettings(){
-  return '<div class="page">'+owner()+'<h2 class="t" style="margin-top:18px">'+ico('gear')+'Settings</h2><div class="card"><h3>'+ico('db')+'Storage <button class="btn ghost" style="margin-left:auto;padding:6px 12px;font-size:13px" data-act="usagerefresh">Refresh</button></h3><div id="storSet">'+storageHtml(S.usage)+destHtml(S.usage)+'</div><p class="muted small" style="margin:10px 0 0">Numbers update every few minutes. Vercel also counts downloads (10GB a month on the free plan), which is not shown here.</p></div><div class="card"><h3>'+ico('db')+'System status</h3><div id="stBox">'+stBox()+'</div></div>'+
+  return '<div class="page">'+owner()+'<h2 class="t" style="margin-top:18px">'+ico('gear')+'Settings</h2>'+themeHtml()+'<div class="card"><h3>'+ico('db')+'Storage <button class="btn ghost" style="margin-left:auto;padding:6px 12px;font-size:13px" data-act="usagerefresh">Refresh</button></h3><div id="storSet">'+storageHtml(S.usage)+destHtml(S.usage)+'</div><p class="muted small" style="margin:10px 0 0">Numbers update every few minutes. Vercel also counts downloads (10GB a month on the free plan), which is not shown here.</p></div><div class="card"><h3>'+ico('db')+'System status</h3><div id="stBox">'+stBox()+'</div></div>'+
    '<div class="card"><h3>'+ico('upload')+'Upload self-test</h3><p class="muted small" style="margin-top:0">Checks every step of uploading a video, one by one. If an upload ever fails, run this and send me what it shows.</p><button class="btn cyan" data-act="diag">'+ico('check')+'Run test</button><div id="diagOut" style="margin-top:12px"></div></div>'+
    '<div class="card"><h3>'+ico('download')+'Backup</h3><p class="muted small" style="margin-top:0">Saves your folders and the list of media. The media files stay in your storage.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn amber" data-act="export">'+ico('download')+'Download backup</button><button class="btn ghost" data-act="import">'+ico('upload')+'Restore backup</button></div></div>'+
    '<div class="card"><h3>'+ico('logout')+'Account</h3><button class="btn ghost" data-act="logout">'+ico('logout')+'Log out</button></div></div>';
@@ -768,7 +828,7 @@ function tray(){
   var t=$('tray');if(!S.uploads.length){t.className='';t.innerHTML='';return}
   var done=S.uploads.filter(function(u){return u.st==='done'}).length;
   t.className='on';
-  t.innerHTML='<div class="trbox"><div class="trhead"><span>Uploads '+done+'/'+S.uploads.length+'</span><button class="ib" data-act="trayclear" aria-label="Close">'+ico('x')+'</button></div>'+S.uploads.map(function(u){
+  t.innerHTML='<div class="trbox"><div class="trhead"><span>Tasks '+done+'/'+S.uploads.length+'</span><button class="ib" data-act="trayclear" aria-label="Close">'+ico('x')+'</button></div>'+S.uploads.map(function(u){
     return '<div class="up '+u.st+'"><div class="n"><span>'+esc(u.name)+'</span><span>'+(u.st==='done'?'Done':u.st==='err'?'Failed':u.st==='wait'?'Waiting':Math.round(u.pct)+'%')+'</span></div><div class="pb"><i style="width:'+(u.st==='wait'?0:Math.max(u.pct,4))+'%"></i></div>'+(u.msg?'<div class="small" style="color:var(--danger);margin-top:4px">'+esc(u.msg)+'</div>':'')+'</div>'}).join('')+'</div>';
 }
 async function addLinks(text,folderKey,copy){
@@ -807,6 +867,97 @@ async function runDiag(){
   await step('7. Can the server reach catbox?',async function(){var c=await api('/api/check?url='+encodeURIComponent('https://catbox.moe/'));if(c.ok===null)throw new Error('Not reachable from the server: '+c.error+'. Catbox links can still be saved as they are.');return 'Reachable (HTTP '+c.status+')'});
   rows.push({t:'All checks finished',s:'ok',m:'Uploading videos from your phone should work now.'});show();
 }
+
+/* ============ themes ============ */
+var THEMES=[['neon','Neon Night','#ff3d9a','#22d3ee','#120a30'],['aurora','Aurora','#19e6a1','#22d3ee','#04161a'],['sunset','Sunset','#ff7a45','#ff3d71','#1c0b12'],['ocean','Ocean','#3b82f6','#06b6d4','#06122b'],['royal','Royal Gold','#f5b301','#ff8a3d','#0d0a05'],['rose','Rose','#ff5fb3','#c77dff','#1a0a1c'],['amoled','AMOLED','#ff3d9a','#8b5cf6','#000000']];
+function currentTheme(){return localStorage.getItem('albumTheme')||'neon'}
+function applyTheme(k){
+  if(k==='neon')document.documentElement.removeAttribute('data-theme');else document.documentElement.dataset.theme=k;
+  localStorage.setItem('albumTheme',k);
+  var t=THEMES.filter(function(x){return x[0]===k})[0];var m=document.querySelector('meta[name=theme-color]');if(t&&m)m.setAttribute('content',t[4]);
+}
+function themeHtml(){
+  var cur=currentTheme();
+  return '<div class="card"><h3>'+ico('image')+'Theme</h3><div class="themes">'+THEMES.map(function(t){return '<button class="th '+(cur===t[0]?'on':'')+'" data-act="theme" data-v="'+t[0]+'" style="--a:'+t[2]+';--b:'+t[3]+'"><i></i><span>'+t[1]+'</span></button>'}).join('')+'</div></div>';
+}
+
+/* ============ storages ============ */
+var STORES=[{k:'blob',name:'My storage',sub:'Vercel',emoji:'💾',c:'var(--cyan)'},{k:'drive',name:'Google Drive',sub:'Your Google account',emoji:'☁️',c:'var(--mint)'},{k:'catbox',name:'Catbox',sub:'Saved as links',emoji:'🔗',c:'var(--amber)'},{k:'other',name:'Other links',sub:'Links from other sites',emoji:'🌐',c:'var(--violet)'}];
+function srcOf(u){u=u||'';if(/\.public\.blob\.vercel-storage\.com\//.test(u))return'blob';if(u.indexOf('/api/dfile/')>-1)return'drive';if(/^https?:\/\/([\w-]+\.)?catbox\.moe\//i.test(u))return'catbox';return'other'}
+function storeStats(){
+  var o={};STORES.forEach(function(x){o[x.k]={n:0,bytes:0}});
+  S.db.folders.forEach(function(f){itemsOf(f.key).forEach(function(it){var d=o[srcOf(it.url)];d.n++;d.bytes+=it.size||0})});
+  return o;
+}
+function tilesHtml(){
+  var ss=storeStats(),u=S.usage;
+  return STORES.map(function(st){
+    var d=ss[st.k];if(st.k==='other'&&!d.n)return'';
+    var sub=d.n+' file'+(d.n===1?'':'s')+(d.bytes?', '+fmt(d.bytes)+' known':''),meter='';
+    var conn=true;
+    if(u&&st.k==='blob'){conn=u.blob.connected;if(conn&&!u.blob.error){var p=Math.min(100,(u.blob.used||0)/u.blob.limit*100);meter='<div class="sbar"><i class="'+(p>=90?'bad':p>=70?'warn':'')+'" data-w="'+Math.max(p,(u.blob.used||0)>0?2:0)+'"></i></div><small>'+fmt(u.blob.used||0)+' of '+fmt(u.blob.limit)+' used</small>'}}
+    if(u&&st.k==='drive'){conn=u.drive.connected&&u.drive.ok;if(conn){var lim=u.drive.limit,p2=lim?Math.min(100,(u.drive.usage||0)/lim*100):0;meter='<div class="sbar"><i class="'+(p2>=90?'bad':p2>=70?'warn':'')+'" data-w="'+Math.max(p2,(u.drive.usage||0)>0?2:0)+'"></i></div><small>'+fmt(u.drive.usage||0)+(lim?' of '+fmt(lim):'')+' used</small>'}}
+    if(u&&st.k==='catbox')meter='<small>No size limit, files stay as links</small>';
+    if(!conn)meter='<small style="color:var(--amber)">Not connected yet</small>';
+    return '<button class="stile" data-act="stor" data-s="'+st.k+'" style="--c:'+st.c+'"><span class="sic">'+st.emoji+'</span><span class="sbody"><b>'+st.name+'</b><small>'+sub+'</small>'+meter+'</span>'+ico('next')+'</button>';
+  }).join('');
+}
+function vStorage(src){
+  var st=STORES.filter(function(x){return x.k===src})[0]||STORES[3];
+  var rows=[],cnt={};TYPES.forEach(function(x){cnt[x.k]=0});
+  S.db.folders.forEach(function(f){itemsOf(f.key).forEach(function(it,i){if(srcOf(it.url)!==src)return;cnt[typeOf(it.kind).k]++;rows.push({it:it,k:f.key,i:i,f:f})})});
+  var fk='storage:'+src;if(S.filterFor!==fk){S.filterFor=fk;S.filter='all'}
+  if(S.filter!=='all'&&!cnt[S.filter])S.filter='all';
+  var shown=rows.filter(function(r){return S.filter==='all'||typeOf(r.it.kind).k===S.filter});
+  var bytes=rows.reduce(function(a,r){return a+(r.it.size||0)},0);
+  var h='<div class="page" style="--c:'+st.c+'"><div class="fhead"><button class="ib" aria-label="Back" data-act="back">'+ico('back')+'</button><div class="ti"><h2><span class="e">'+st.emoji+'</span>'+st.name+'</h2><div class="muted small">'+rows.length+' file'+(rows.length===1?'':'s')+(bytes?', '+fmt(bytes)+' known size':'')+'</div></div><button class="ib" aria-label="Select" data-act="selmode">'+ico('check')+'</button></div>';
+  if(rows.length)h+='<div class="tcrow">'+tchips(cnt)+'</div>'+filterChips(cnt,rows.length,S.filter,'filter');
+  if(!rows.length)h+='<div class="empty"><span class="big">'+st.emoji+'</span><h3>Nothing stored here yet</h3><p>Files you save to '+st.name+' show up here. You can also move files in from another storage.</p></div>';
+  else h+=shown.map(function(r,idx){return mediaRow(r.it,r.k,r.i,true,r.f,idx)}).join('');
+  return h+'</div>';
+}
+
+/* ============ select mode, bulk actions, transfer ============ */
+function selIds(){return Object.keys(S.sel).filter(function(k){return S.sel[k]})}
+function selbar(){
+  var b=$('selbar');if(!b)return;
+  document.body.classList.toggle('selmode',S.selMode);
+  if(!S.selMode){b.className='';b.innerHTML='';return}
+  var n=selIds().length;
+  b.className='on';
+  b.innerHTML='<span class="cnt">'+n+' selected</span><button class="btn ghost" data-act="selall">All</button><button class="btn cyan" data-act="bulkxfer"'+(n?'':' disabled style="opacity:.5"')+'>'+ico('cloud')+'Transfer</button><button class="btn ghost" data-act="bulkmove"'+(n?'':' disabled style="opacity:.5"')+'>'+ico('move')+'Move</button><button class="btn danger" data-act="bulkdel"'+(n?'':' disabled style="opacity:.5"')+'>'+ico('trash')+'</button><button class="ib" data-act="selmode" aria-label="Cancel">'+ico('x')+'</button>';
+}
+function toggleSel(id,force){
+  var on=force!==undefined?force:!S.sel[id];if(on)S.sel[id]=true;else delete S.sel[id];
+  document.querySelectorAll('[data-sid="'+id+'"]').forEach(function(r){r.classList.toggle('selrow-on',on);var c=r.querySelector('.chk');if(c)c.classList.toggle('on',on)});
+  selbar();
+}
+function pickStorage(title,count){
+  var u=S.usage||{blob:{connected:true},drive:{connected:false}};
+  var opts=[['blob','💾','My storage',u.blob.connected],['drive','☁️','Google Drive',u.drive.connected&&u.drive.ok!==false],['catbox','🔗','Catbox',true]];
+  var h='<h3>'+esc(title)+'</h3><div class="plist">'+opts.map(function(o){return '<button data-k="'+o[0]+'"'+(o[3]?'':' disabled style="opacity:.45"')+'><span style="font-size:22px">'+o[1]+'</span><b style="flex:1">'+o[2]+'</b>'+(o[3]?'':'<span class="muted small">not connected</span>')+'</button>'}).join('')+'</div><label style="display:flex;gap:10px;margin-top:12px;align-items:center" class="small muted"><input type="checkbox" id="keepOrig" style="width:20px;height:20px;accent-color:#34e3a0"><span>Keep the original too (copy instead of move)</span></label><p class="muted small" style="margin:10px 0 0">Catbox files cannot be deleted later from here, they stay online as links.</p><div class="row"><button class="btn ghost" data-m="x">Cancel</button></div>';
+  return modal(h,function(el,close){el.querySelectorAll('[data-k]:not([disabled])').forEach(function(b){b.onclick=function(){close({to:b.dataset.k,keep:el.querySelector('#keepOrig').checked})}});el.querySelector('[data-m=x]').onclick=function(){close(null)}});
+}
+function itemById(id){var f=null;Object.keys(S.db.categories).forEach(function(c){S.db.categories[c].forEach(function(x,i){if(x.id===id)f={it:x,k:c,i:i}})});return f}
+var xq=[],xrun=false;
+function runTransfer(ids,to,keep){
+  ids.forEach(function(id){var f=itemById(id);var nm=f?(f.it.name||(typeOf(f.it.kind).one+' '+(f.i+1))):id;
+    var u={id:Math.random().toString(36).slice(2),name:'Transfer: '+nm,pct:0,st:'wait',msg:''};S.uploads.push(u);xq.push({u:u,id:id,to:to,keep:keep})});
+  tray();if(!xrun)pumpX();
+}
+async function pumpX(){
+  xrun=true;var ok=0,bad=0;
+  while(xq.length){
+    var j=xq.shift();j.u.st='up';j.u.pct=35;tray();
+    try{var r=await post('/api/transfer',{id:j.id,to:j.to,keep:j.keep});j.u.st='done';j.u.pct=100;j.u.msg=r.skipped?'Already in that storage':'';ok++}
+    catch(e){j.u.st='err';j.u.msg=e.message||'failed';bad++}
+    tray();
+  }
+  xrun=false;S.usage=null;
+  await refresh();loadUsage(true);
+  toast(ok+' transferred'+(bad?', '+bad+' failed':''),bad?'':'ok');
+}
+
 /* ============ viewer ============ */
 function openViewer(k,i){
   var items=itemsOf(k);if(!items.length)return;var idx=i;
@@ -858,7 +1009,7 @@ document.addEventListener('click',function(e){
   else if(a==='preset'){toast('Creating folders...');post('/api/folders/bulk',{folders:PRESET.map(function(p){return{title:p[0],icon:p[1]}})}).then(refresh).then(function(){toast('Folders created','ok')}).catch(function(er){toast(er.message,'err')})}
   else if(a==='pick'){S.pickFolder=k;$('filePick').value='';$('filePick').click()}
   else if(a==='addlink'){linkSheet(k).then(function(r){if(r)addLinks(r.text,k,r.copy)})}
-  else if(a==='play')openViewer(k,+i);
+  else if(a==='play'){if(S.selMode){var pit=itemsOf(k)[+i];if(pit)toggleSel(pit.id)}else openViewer(k,+i)}
   else if(a==='dl')download(itemsOf(k)[+i],+i+1);
   else if(a==='cp'){var url=itemsOf(k)[+i].url;(navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){toast('Link copied','ok')},function(){prompt('Copy this link',url)})}
   else if(a==='ren'){var id=b.dataset.id,it=null;Object.keys(S.db.categories).forEach(function(c){S.db.categories[c].forEach(function(x){if(x.id===id)it=x})});
@@ -874,6 +1025,15 @@ document.addEventListener('click',function(e){
   else if(a==='viewtoggle'){S.view=S.view==='grid'?'list':'grid';localStorage.setItem('albumView',S.view);render(true)}
   else if(a==='tag'){var idt=b.dataset.id,itt=null;Object.keys(S.db.categories).forEach(function(c){S.db.categories[c].forEach(function(x){if(x.id===idt)itt=x})});
     pickType(itt&&itt.kind).then(function(kd){if(!kd)return;post('/api/item/update',{id:idt,kind:kd}).then(refresh).then(function(){toast('Type changed','ok')}).catch(function(er){toast(er.message,'err')})})}
+  else if(a==='stor'){var sx=b.dataset.s;if(S.usage&&((sx==='blob'&&!S.usage.blob.connected)||(sx==='drive'&&!(S.usage.drive.connected&&S.usage.drive.ok)))){toast('This storage is not connected yet. See Settings.','err')}else location.hash='#/storage/'+sx}
+  else if(a==='theme'){applyTheme(b.dataset.v);render(true)}
+  else if(a==='selmode'){S.selMode=!S.selMode;S.sel={};render(true)}
+  else if(a==='selone'){toggleSel(b.dataset.id)}
+  else if(a==='selall'){var all=document.querySelectorAll('#view [data-sid]'),ids2=[];all.forEach(function(r){ids2.push(r.dataset.sid)});var every=ids2.length&&ids2.every(function(x){return S.sel[x]});ids2.forEach(function(x){toggleSel(x,!every)})}
+  else if(a==='xfer'){pickStorage('Transfer to...').then(function(r){if(r)runTransfer([b.dataset.id],r.to,r.keep)})}
+  else if(a==='bulkxfer'){var idsx=selIds();if(!idsx.length)return;pickStorage('Transfer '+idsx.length+' item'+(idsx.length>1?'s':'')+' to...').then(function(r){if(!r)return;S.selMode=false;S.sel={};render(true);runTransfer(idsx,r.to,r.keep)})}
+  else if(a==='bulkmove'){var idsm=selIds();if(!idsm.length)return;pickFolder('Move '+idsm.length+' item'+(idsm.length>1?'s':'')+' to folder','').then(function(to){if(!to)return;(async function(){toast('Moving...');var okm=0;for(var q=0;q<idsm.length;q++){try{await post('/api/item/update',{id:idsm[q],category:to});okm++}catch(e){}}S.selMode=false;S.sel={};await refresh();toast(okm+' moved','ok')})()})}
+  else if(a==='bulkdel'){var idsd=selIds();if(!idsd.length)return;confirmBox('Delete '+idsd.length+' item'+(idsd.length>1?'s':'')+'?','They will be removed from your album and from their storage.','Delete').then(function(ok){if(!ok)return;(async function(){toast('Deleting...');var okd=0;for(var q=0;q<idsd.length;q++){try{await api('/api/item?id='+idsd[q],{method:'DELETE'});okd++}catch(e){}}S.selMode=false;S.sel={};S.usage=null;await refresh();loadUsage(true);toast(okd+' deleted')})()})}
   else if(a==='diag'){runDiag()}
   else if(a==='dest'){post('/api/settings',{dest:b.dataset.v}).then(function(){return loadUsage(true)}).then(function(){toast('Saved','ok')}).catch(function(er){toast(er.message,'err')})}
   else if(a==='usagerefresh'){toast('Refreshing...');loadUsage(true).then(function(){toast('Updated','ok')})}
