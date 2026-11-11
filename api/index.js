@@ -186,6 +186,45 @@ async function copyToDrive(url, kind, base) {
   const j = await drive.fetchIntoDrive(url, ext);
   return { url: base + "/api/dfile/" + j.id + "." + ext, size: j.size };
 }
+const srcOf = u => isBlobUrl(u) ? "blob" : isDriveUrl(u) ? "drive" : isCatbox(u) ? "catbox" : "other";
+
+// ask catbox to fetch the file itself from a public link (no data passes through this server)
+async function copyToCatbox(url) {
+  const fd = new FormData();
+  fd.append("reqtype", "urlupload");
+  fd.append("url", url);
+  const r = await fetch("https://catbox.moe/user/api.php", { method: "POST", body: fd });
+  const t = (await r.text()).trim();
+  if (!/^https?:\/\//.test(t)) throw new Error("Catbox said: " + t.slice(0, 140));
+  return t;
+}
+
+// move one item to another storage (blob / drive / catbox); the old copy is removed unless keep is true
+async function transferItem(id, to, keep, base) {
+  if (!["blob", "drive", "catbox"].includes(to)) throw new Error("bad destination");
+  const all = await loadAll();
+  let folderKey = null, item = null;
+  for (const k of Object.keys(all.categories)) {
+    const f = all.categories[k].find(x => x.id === id);
+    if (f) { folderKey = k; item = f; break; }
+  }
+  if (!item) { const e = new Error("item not found"); e.code = 404; throw e; }
+  const from = srcOf(item.url);
+  if (from === to) return { skipped: true, from, to, url: item.url };
+  if (to === "blob" && !BLOB_TOKEN) throw new Error("My storage (Blob) is not connected");
+  if (to === "drive" && !drive.configured()) throw new Error("Google Drive is not connected");
+  let newUrl = "", size = item.size;
+  if (to === "blob") newUrl = await copyToBlob(item.url, item.kind);
+  else if (to === "drive") { const c = await copyToDrive(item.url, item.kind, base); newUrl = c.url; size = c.size || size; }
+  else newUrl = await copyToCatbox(item.url);
+  const old = item.url;
+  item.url = newUrl;
+  if (size) item.size = size;
+  await saveCat(folderKey, all.categories[folderKey]);
+  if (!keep && (from === "blob" || from === "drive")) await dropFiles([old]);
+  return { skipped: false, from, to, url: newUrl };
+}
+
 async function copyAuto(url, kind, base) {
   const first = await pickDest();
   const order = first === "drive" ? ["drive", "blob"] : ["blob", "drive"];
@@ -309,6 +348,13 @@ module.exports = async function handler(req, res) {
       if (!["auto", "blob", "drive"].includes(b.dest)) return send(res, 400, { error: "bad value" });
       await redis(["SET", "album:settings", JSON.stringify({ dest: b.dest })]);
       return send(res, 200, { ok: true, dest: b.dest });
+    }
+
+    // move one item between storages
+    if (M === "POST" && p === "/api/transfer") {
+      const b = await getJson(req);
+      try { return send(res, 200, await transferItem(b.id, b.to, !!b.keep, siteBase)); }
+      catch (e) { return send(res, e.code || 500, { error: e.message }); }
     }
 
     // check that a link really works (from the server's side)
